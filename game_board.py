@@ -29,6 +29,9 @@ class GameBoard:
 
     def create_top_frame(self):
         """Crea el frame superior con el contador de minas y el temporizador"""
+        if hasattr(self, 'top_frame'):
+            self.top_frame.destroy()
+
         self.top_frame = tk.Frame(self.master)
         self.top_frame.pack(pady=5)
 
@@ -50,6 +53,9 @@ class GameBoard:
 
     def create_board(self):
         """Crea el tablero de juego con botones"""
+        if hasattr(self, 'frame'):
+            self.frame.destroy()
+
         self.frame = tk.Frame(self.master)
         self.frame.pack(padx=10, pady=5)
 
@@ -69,6 +75,26 @@ class GameBoard:
                 button.bind('<Button-3>', lambda e, row=i, col=j: self.flag(row, col))
                 row.append(button)
             self.buttons.append(row)
+
+    def reset_game(self):
+        """Reinicia completamente el juego"""
+        # Detener el temporizador si está corriendo
+        self.timer_running = False
+
+        # Limpiar el tablero
+        if hasattr(self, 'frame'):
+            for row in self.buttons:
+                for button in row:
+                    button.destroy()
+
+        # Reiniciar variables
+        self.buttons = []
+        self.setup_game()
+
+        # Recrear la interfaz
+        self.create_top_frame()
+        self.create_board()
+        self.place_mines()
 
     def place_mines(self):
         """Coloca las minas aleatoriamente en el tablero"""
@@ -180,4 +206,5 @@ class GameBoard:
                 len(self.revealed) == self.size * self.size - self.mines):
             self.game_over = True
             self.timer_running = False
-            m
+            messagebox.showinfo("¡Felicitaciones!",
+                                f"¡Has ganado! 🎉\nTiempo: {self.elapsed_time} segundos")
